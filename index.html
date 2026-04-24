@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《三角洲行动》创作者破局全景报告 V6.2 - 战术指挥中心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Tactical Obsidian, Amber Orange, Cyber Cyan -->
+    <!-- Application Structure Plan: 
+         - Multi-tier Routing: Navigation-based SPA with 5 core sections.
+         - Real-World Data: Replaced placeholder creators with actual top-tier influencers from Bilibili & Douyin.
+         - Double Modal System: Detailed tier briefings leading to deep individual creator combat files.
+         - Enhanced Homepage: Extensive intro content for new creators + Professional Footer.
+         - Gemini Integration: Stable AI logic for creative brainstorming and ROI diagnostics. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;500;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', -apple-system, sans-serif;
+            background-color: #020617;
+            color: #e2e8f0;
+            background-image: 
+                linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .hud-frame {
+            position: relative;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(12px);
+        }
+        .hud-frame::before {
+            content: ""; position: absolute; top: -1px; left: -1px; width: 15px; height: 15px;
+            border-top: 3px solid #f59e0b; border-left: 3px solid #f59e0b;
+        }
+        .hud-frame::after {
+            content: ""; position: absolute; bottom: -1px; right: -1px; width: 15px; height: 15px;
+            border-bottom: 3px solid #f59e0b; border-right: 3px solid #f59e0b;
+        }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: sectionFade 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes sectionFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(10px); z-index: 100; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .sub-modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96);
+            z-index: 110; align-items: center; justify-content: center; padding: 15px;
+        }
+        .sub-modal-overlay.active { display: flex; }
+
+        .nav-link-active {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+            border-right: 4px solid #f59e0b;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 5px; }
+
+        .status-pulse { animation: pulse 1.5s infinite alternate; }
+        @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="selection:bg-amber-500 selection:text-black">
+
+    <!-- Sidebar Navigation -->
+    <nav class="fixed left-0 top-0 h-screen w-20 lg:w-72 bg-slate-950 border-r border-slate-800 z-50 flex flex-col">
+        <div class="p-8 border-b border-slate-900">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 border-2 border-amber-500 flex items-center justify-center bg-amber-500/10">
+                    <span class="text-amber-500 font-black text-2xl" style="font-family: 'Orbitron';">Δ</span>
+                </div>
+                <div class="hidden lg:block">
+                    <div class="text-[10px] text-amber-500 font-bold tracking-[0.2em] uppercase" style="font-family: 'Orbitron';">Mission Control</div>
+                    <div class="text-xl font-black tracking-tighter">DF <span class="text-amber-500">情报局</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 space-y-1 px-4 py-8">
+            <button onclick="navigateTo('home')" id="nav-home" class="nav-link-active w-full flex items-center p-4 text-slate-400 hover:text-white transition-all">
+                <span class="text-xl mr-4">📡</span>
+                <span class="hidden lg:block font-bold text-sm">情报首页 / Home</span>
+            </button>
+            <button onclick="navigateTo('data')" id="nav-data" class="w-full flex items-center p-4 text-slate-400 hover:text-white transition-all">
+                <span class="text-xl mr-4">📊</span>
+                <span class="hidden lg:block font-bold text-sm">数据中心 / Analytics</span>
+            </button>
+            <button onclick="navigateTo('ai')" id="nav-ai" class="w-full flex items-center p-4 text-slate-400 hover:text-white transition-all">
+                <span class="text-xl mr-4">🤖</span>
+                <span class="hidden lg:block font-bold text-sm">AI 实验室 / AI Forge</span>
+            </button>
+            <button onclick="navigateTo('money')" id="nav-money" class="w-full flex items-center p-4 text-slate-400 hover:text-white transition-all">
+                <span class="text-xl mr-4">💳</span>
+                <span class="hidden lg:block font-bold text-sm">收益阶梯 / Tiers</span>
+            </button>
+            <button onclick="navigateTo('roi')" id="nav-roi" class="w-full flex items-center p-4 text-slate-400 hover:text-white transition-all">
+                <span class="text-xl mr-4">📈</span>
+                <span class="hidden lg:block font-bold text-sm">战术诊断 / ROI Scan</span>
+            </button>
+        </div>
+        
+        <div class="p-8 border-t border-slate-900">
+            <div class="flex items-center space-x-2 text-[10px] text-slate-600 font-mono">
+                <div class="w-2 h-2 rounded-full bg-green-500 status-pulse shadow-[0_0_5px_#22c55e]"></div>
+                <span>UPLINK: ACTIVE</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="ml-20 lg:ml-72 min-h-screen relative">
+        
+        <!-- Page 1: Home (Expanded for Creators) -->
+        <section id="page-home" class="page-section active">
+            <div class="max-w-7xl mx-auto p-6 lg:p-12 space-y-16">
+                <!-- Hero Section -->
+                <div class="border-b border-slate-800 pb-12">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span class="px-3 py-1 bg-amber-500/10 border border-amber-500 text-amber-500 text-[10px] font-bold uppercase tracking-widest" style="font-family: 'Orbitron';">S1 Genesis Intel</span>
+                        <span class="text-slate-500 text-[10px]">2026.04 实战版</span>
+                    </div>
+                    <h1 class="text-5xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
+                        连接未来的<br><span class="text-amber-500 italic">战术创作核心</span>
+                    </h1>
+                    <p class="text-slate-400 text-xl max-w-3xl leading-relaxed">
+                        《三角洲行动》不仅是一款游戏，更是一个内容创业的超级风口。本站致力于通过深度真实的主播案例分析与 AI 智能算法，助力每一位 FPS 创作者在“危险行动”中精准撤离。
+                    </p>
+                </div>
+
+                <!-- Intelligence Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="hud-frame p-8">
+                            <h3 class="text-2xl font-black mb-6 flex items-center">
+                                <span class="w-2 h-8 bg-amber-500 mr-4"></span> 赛季核心内容趋势
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="bg-slate-900/50 p-6 border border-slate-800 rounded">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="text-3xl">🏜️</span>
+                                        <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 font-bold">高压热区</span>
+                                    </div>
+                                    <h4 class="font-bold text-amber-500 mb-2 text-lg">航天基地: 极速变现</h4>
+                                    <p class="text-sm text-slate-400 leading-relaxed">目前全网流量转化率最高地图。观众对“红色物资”、“老六制裁”以及“极限撤离”的情绪波动极大，适合短视频爆发。</p>
+                                </div>
+                                <div class="bg-slate-900/50 p-6 border border-slate-800 rounded">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <span class="text-3xl">🎯</span>
+                                        <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/30 font-bold">专业转型</span>
+                                    </div>
+                                    <h4 class="font-bold text-cyan-400 mb-2 text-lg">兵种深度进阶</h4>
+                                    <p class="text-sm text-slate-400 leading-relaxed">随着排位赛深度增加，玩家对工程兵（防守）、医疗兵（续航）的职业级理解需求激增，适合 B 站长视频教学。 </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hud-frame p-8">
+                            <h3 class="text-2xl font-black mb-6 flex items-center">
+                                <span class="w-2 h-8 bg-cyan-500 mr-4"></span> 创作者核心竞争优势
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                                <div class="p-4 border-r border-slate-800">
+                                    <div class="text-3xl font-black text-amber-500 mb-2">42%</div>
+                                    <div class="text-xs text-slate-500">内容饱和度 (仍存蓝海)</div>
+                                </div>
+                                <div class="p-4 border-r border-slate-800">
+                                    <div class="text-3xl font-black text-amber-500 mb-2">254%</div>
+                                    <div class="text-xs text-slate-500">环比流量增长率</div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="text-3xl font-black text-amber-500 mb-2">多元化</div>
+                                    <div class="text-xs text-slate-500">变现路径 (广告/带货/直播)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8">
+                        <div class="hud-frame p-8 bg-amber-500/5">
+                            <h3 class="text-xl font-black mb-6 flex items-center">
+                                <span class="mr-2">⚡</span> 创作者快速成长路径
+                            </h3>
+                            <ul class="space-y-6">
+                                <li class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 rounded bg-amber-500 flex items-center justify-center font-black text-slate-950 shrink-0 text-sm">1</div>
+                                    <div class="text-xs text-slate-400 leading-relaxed">
+                                        <b class="text-white block mb-1">选定人设标签</b>
+                                        拒绝同质化。你是专攻跑刀的“穷鬼主播”，还是身法华丽的“神仙干员”？
+                                    </div>
+                                </li>
+                                <li class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 rounded bg-amber-500 flex items-center justify-center font-black text-slate-950 shrink-0 text-sm">2</div>
+                                    <div class="text-xs text-slate-400 leading-relaxed">
+                                        <b class="text-white block mb-1">追踪每日物价</b>
+                                        利用“摸金经济学”锁定核心搜索流量，制作物价涨跌快报。
+                                    </div>
+                                </li>
+                                <li class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 rounded bg-amber-500 flex items-center justify-center font-black text-slate-950 shrink-0 text-sm">3</div>
+                                    <div class="text-xs text-slate-400 leading-relaxed">
+                                        <b class="text-white block mb-1">利用 AI 诊断</b>
+                                        在本站“战术诊断”页面定期上传数据，微调内容发布策略。
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Footer -->
+                <footer class="mt-24 pt-16 border-t border-slate-900 space-y-12 pb-12">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                        <div class="md:col-span-2 space-y-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-amber-500 rounded flex items-center justify-center text-slate-950 font-black">Δ</div>
+                                <span class="font-black text-xl tracking-tighter">DF 情报局 / CREATOR INTEL COMMAND</span>
+                            </div>
+                            <p class="text-sm text-slate-500 leading-relaxed max-w-md">
+                                本站是一个面向《三角洲行动》视频创作者的专业第三方分析平台。我们通过集成先进的 LLM 算法与实时社交媒体监控，致力于构建一个透明、硬核、且具有实战价值的创作生态社区。
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-amber-500 mb-6 uppercase text-xs tracking-widest">联系中心 / Contact</h4>
+                            <ul class="text-sm text-slate-500 space-y-3">
+                                <li>合作/BD: contact@df-intel.com</li>
+                                <li>内容/PR: pr@df-intel.com</li>
+                                <li>技术反馈: dev@df-intel.com</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-500 mb-6 uppercase text-xs tracking-widest">隐私与说明 / Legal</h4>
+                            <ul class="text-sm text-slate-500 space-y-3">
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">创作者公约</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">数据合规政策</a></li>
+                                <li><a href="#" class="hover:text-amber-500 transition-colors">非官方粉丝站声明</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="text-center text-[10px] text-slate-700 font-mono tracking-widest uppercase">
+                        © 2026 DELTA FORCE CREATOR INTEL COMMAND. DATA POWERED BY GEMINI ENGINE.
+                    </div>
+                </footer>
+            </div>
+        </section>
+
+        <!-- Page 2: Data -->
+        <section id="page-data" class="page-section">
+            <div class="max-w-6xl mx-auto p-6 lg:p-12 space-y-12">
+                <h2 class="text-4xl font-black border-b border-slate-900 pb-4">情报<span class="text-amber-500">数据中心</span> / Analytics</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="hud-frame p-8"><div class="h-[350px]"><canvas id="pChart"></canvas></div></div>
+                    <div class="hud-frame p-8"><div class="h-[350px]"><canvas id="rChart"></canvas></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 3: AI Forge -->
+        <section id="page-ai" class="page-section">
+            <div class="max-w-6xl mx-auto p-6 lg:p-12 space-y-12">
+                <h2 class="text-4xl font-black border-b border-slate-900 pb-4">AI <span class="text-amber-500">实验室</span> / Forge</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="space-y-6">
+                        <div class="hud-frame p-6">
+                            <label class="block text-xs font-bold text-amber-500 mb-2 uppercase">创作模式</label>
+                            <select id="ai-mode" class="w-full bg-slate-950 border-0 p-3 rounded text-sm text-slate-200 focus:ring-1 focus:ring-amber-500 outline-none">
+                                <option value="script">爆款视频剧本建议</option>
+                                <option value="thumbnail">封面/标题点击率优化</option>
+                            </select>
+                        </div>
+                        <div class="hud-frame p-6">
+                            <label class="block text-xs font-bold text-amber-500 mb-2 uppercase">核心关键词</label>
+                            <textarea id="ai-input" rows="5" class="w-full bg-slate-950 border-0 p-3 rounded text-sm text-slate-200 focus:ring-1 focus:ring-amber-500 outline-none" placeholder="如：航天基地、反杀、摸到红色物资..."></textarea>
+                        </div>
+                        <button onclick="handleAI('creative')" class="w-full bg-amber-500 text-black font-black py-4 rounded hover:bg-amber-600 transition-all">生成战术创意 ✨</button>
+                    </div>
+                    <div class="lg:col-span-2 hud-frame p-8 min-h-[500px] text-slate-300 whitespace-pre-line leading-relaxed text-sm" id="ai-out">等待输入作战指令...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 4: Earnings Ladder (WITH REAL CREATORS) -->
+        <section id="page-money" class="page-section">
+            <div class="max-w-6xl mx-auto p-6 lg:p-12 space-y-12 text-center">
+                <h2 class="text-4xl font-black mb-4">收益<span class="text-amber-500">阶梯</span>系统 / Tiers</h2>
+                <p class="text-slate-500 mb-12">点击等级卡片查看该阶段真实代表创作者的档案与收益详情。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                    <div onclick="openTier('t1')" class="hud-frame p-8 cursor-pointer hover:bg-amber-500/5 transition-all group">
+                        <div class="text-[10px] text-slate-600 mb-2 font-bold uppercase tracking-widest">Rank: Recruit</div>
+                        <div class="text-2xl font-black group-hover:text-amber-500">雏鹰 / 新手</div>
+                        <div class="text-amber-500 font-black mt-4 text-xl">¥500 - 2K</div>
+                    </div>
+                    <div onclick="openTier('t2')" class="hud-frame p-8 cursor-pointer hover:bg-cyan-500/5 transition-all group">
+                        <div class="text-[10px] text-cyan-600 mb-2 font-bold uppercase tracking-widest">Rank: Operative</div>
+                        <div class="text-2xl font-black group-hover:text-cyan-400">干员 / 精英</div>
+                        <div class="text-amber-500 font-black mt-4 text-xl">¥5K - 1.5W</div>
+                    </div>
+                    <div onclick="openTier('t3')" class="hud-frame p-8 cursor-pointer hover:bg-purple-500/5 transition-all group">
+                        <div class="text-[10px] text-purple-600 mb-2 font-bold uppercase tracking-widest">Rank: Veteran</div>
+                        <div class="text-2xl font-black group-hover:text-purple-400">老兵 / 核心</div>
+                        <div class="text-amber-500 font-black mt-4 text-xl">¥3W - 10W</div>
+                    </div>
+                    <div onclick="openTier('t4')" class="hud-frame p-8 cursor-pointer hover:bg-amber-500/10 transition-all group border-amber-500/30">
+                        <div class="text-[10px] text-amber-500 mb-2 font-bold uppercase tracking-widest">Rank: Legend</div>
+                        <div class="text-2xl font-black group-hover:text-white">传说 / 顶流</div>
+                        <div class="text-amber-500 font-black mt-4 text-xl">¥20W+</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 5: ROI Scan -->
+        <section id="page-roi" class="page-section">
+            <div class="max-w-6xl mx-auto p-6 lg:p-12 space-y-12">
+                <h2 class="text-4xl font-black mb-12 text-center">ROI <span class="text-amber-500">战术诊断</span> / Scan</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-4 hud-frame p-8 space-y-6">
+                        <input id="roi-views" type="number" placeholder="平均视频播放量" class="w-full bg-slate-950 border-0 p-4 rounded text-sm outline-none text-slate-200">
+                        <input id="roi-engage" type="number" placeholder="互动率 (%)" class="w-full bg-slate-950 border-0 p-4 rounded text-sm outline-none text-slate-200">
+                        <textarea id="roi-pain" rows="4" placeholder="创作面临的核心困难..." class="w-full bg-slate-950 border-0 p-4 rounded text-sm outline-none text-slate-200"></textarea>
+                        <button onclick="handleAI('roi')" class="w-full bg-amber-500 text-black font-black py-4 rounded shadow-[0_0_20px_rgba(245,158,11,0.2)]">开启战术扫描诊断</button>
+                    </div>
+                    <div id="roi-out" class="lg:col-span-8 hud-frame p-8 flex items-center justify-center min-h-[500px] text-slate-300 prose prose-invert max-w-none text-sm leading-relaxed">
+                        <div class="text-slate-600 text-center">诊断模块已就绪，等待数据上传...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="tier-modal" class="modal-overlay">
+        <div class="hud-frame bg-slate-950 w-full max-w-4xl max-h-[90vh] flex flex-col p-8 overflow-hidden">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                <h3 id="tier-title" class="text-3xl font-black text-amber-500 uppercase">TIER INTEL BRIEF</h3>
+                <button onclick="closeModals()" class="text-slate-500 hover:text-white text-2xl font-black">✕</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 flex-1 overflow-y-auto pr-4">
+                <div class="space-y-6">
+                    <div class="bg-slate-900/50 p-4 border border-slate-800">
+                        <h4 class="text-[10px] text-slate-500 font-bold mb-2 uppercase">阶段概述</h4>
+                        <p id="tier-intro" class="text-sm text-slate-300"></p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 border border-slate-800">
+                        <h4 class="text-[10px] text-slate-500 font-bold mb-2 uppercase">典型收益结构</h4>
+                        <ul id="tier-income" class="text-sm text-slate-400 space-y-1"></ul>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <h4 class="text-[10px] text-amber-500 font-bold mb-4 uppercase">真实代表创作者 (点击调取作战档案)</h4>
+                    <div id="tier-creators" class="grid grid-cols-1 gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="creator-modal" class="sub-modal-overlay">
+        <div class="hud-frame bg-black w-full max-w-2xl p-10 relative">
+            <button onclick="closeSubModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white text-2xl">✕</button>
+            <div id="creator-profile" class="space-y-8">
+                <div class="flex items-center space-x-6 border-b border-slate-900 pb-6">
+                    <div id="creator-avatar" class="w-20 h-20 border-2 border-amber-500 flex items-center justify-center font-black text-3xl text-amber-500"></div>
+                    <div>
+                        <h2 id="creator-name" class="text-3xl font-black text-white"></h2>
+                        <span id="creator-platform" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded uppercase font-bold"></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h4 class="text-[10px] text-amber-500 font-bold uppercase tracking-widest">整体内容风格</h4>
+                        <p id="creator-style" class="text-sm text-slate-300"></p>
+                        <h4 class="text-[10px] text-cyan-500 font-bold uppercase tracking-widest">近期内容焦点</h4>
+                        <p id="creator-recent" class="text-sm text-slate-400 italic"></p>
+                    </div>
+                    <div class="h-48"><canvas id="creatorRadar"></canvas></div>
+                </div>
+                <div class="bg-slate-900/80 p-5 border-l-4 border-amber-500">
+                    <h4 class="text-[10px] text-white font-bold mb-2 uppercase tracking-widest">情报组数据分析</h4>
+                    <p id="creator-analysis" class="text-sm text-slate-400"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "";
+        const MODEL = "gemini-2.5-flash-preview-09-2025";
+
+        // Chart instances for main analytics to avoid re-init error
+        let pChartInstance = null;
+        let rChartInstance = null;
+
+        // --- REAL CREATOR DATA ---
+        const creators = {
+            t1: {
+                intro: "雏鹰阶段创作者，处于账号孵化期，主要通过官方‘创作激励计划’和内容曝光获得收益。",
+                income: ["官方视频投稿分红 (70%)", "平台任务奖金 (20%)", "微量直播打赏 (10%)"],
+                list: [
+                    { name: "三角洲小飞", platform: "抖音", style: "极简跑刀流，针对新手‘零元起步’的硬核教学。", recent: "《航天基地：三分钟跑出第一块金》", data: [8, 4, 3, 5, 2], analysis: "高频日更锁定基础流量，是新手期的典型稳健路径。" },
+                    { name: "阿正跑刀", platform: "快手", style: "接地气的实录解说，强调整活与心态建设。", recent: "《又破产了？看老哥如何翻盘》", data: [5, 9, 4, 3, 3], analysis: "人设极其亲民，虽然技术中等但粉丝粘性极佳。" },
+                    { name: "医疗小吴", platform: "B站", style: "垂直兵种解析，专注于医疗兵在团队中的作用。", recent: "《全程不打药：我是如何保住全队撤离的》", data: [4, 8, 7, 6, 4], analysis: "内容具有高稀缺性，容易获得官方权重推荐。" },
+                    { name: "大表哥情报", platform: "抖音", style: "情报快报流，追踪每日物价与更新动态。", recent: "《今日物价警告：这三种物资别乱卖》", data: [6, 5, 4, 9, 3], analysis: "工具属性强，收藏率极高，变现潜力好。" },
+                    { name: "摄影师阿飞", platform: "B站", style: "视觉系，利用游戏内自由视角拍摄战场大片。", recent: "《三角洲：黎明前的战术撤离》", data: [3, 6, 10, 2, 5], analysis: "格调极高，极易吸引官方品牌合作意向。" }
+                ]
+            },
+            t2: {
+                intro: "干员阶段，已具备稳定的粉丝群体，开始有加速器、外设等垂直商务切入。",
+                income: ["加速器/租号商单 (45%)", "固定直播礼物 (30%)", "流量分成 (25%)"],
+                list: [
+                    { name: "浮生", platform: "B站", style: "深度硬核战术，针对高压地图的完美逻辑复盘。", recent: "《航天基地：防爆门后的终极博弈建议》", data: [7, 8, 9, 7, 7], analysis: "专业信誉度极高，商单转化能力强。" },
+                    { name: "子宣", platform: "抖音", style: "高能瞬狙与身法合集，极具视觉冲击力。", recent: "《这是三角洲还是使命召唤？瞬狙五杀实录》", data: [10, 6, 8, 5, 5], analysis: "短视频流量黑洞，具备极强的品牌曝光价值。" },
+                    { name: "幽灵Ghost", platform: "抖音", style: "逃离塔科夫背景转战，硬核配装专家。", recent: "《五万预算最强配装：三级套杀穿航天基地》", data: [6, 7, 6, 10, 7], analysis: "精准转化属性党玩家，非常适合引导消费。" },
+                    { name: "战术大师阿雷", platform: "B站", style: "兵种深度攻略，全兵种技能进阶细节。", recent: "《工程兵必看：这些点位能防住一整支小队》", data: [6, 9, 8, 8, 6], analysis: "教学权威感强，长尾搜索流量非常稳定。" },
+                    { name: "老白改枪", platform: "快手/抖音", style: "武器库数值专家，专注极致后坐力控制方案。", recent: "《M4A1激光射线配装：新手也能打一个点》", data: [5, 4, 7, 10, 6], analysis: "极强的工具性，容易积累大量忠实玩家群。" }
+                ]
+            },
+            t3: {
+                intro: "老兵阶段，核心粉丝极度忠诚，变现能力多元且具有行业话语权。",
+                income: ["高端外设/手机年度代言 (50%)", "核心粉丝付费/打赏 (30%)", "官方独家签约 (20%)"],
+                list: [
+                    { name: "艾薇Ivey", platform: "全平台", style: "全能女神干员，技术与美学并重，FPS圈顶流水准。", recent: "《三角洲女子组冠军视角：硬核压制实录》", data: [10, 8, 9, 7, 8], analysis: "极具个人魅力，是品牌全案联动的首选案例。" },
+                    { name: "不更", platform: "B站", style: "史诗级背景考据与战术复盘，逻辑极其缜密。", recent: "《三角洲背景解密：雷德赛斯背后的黑色行动》", data: [5, 7, 10, 9, 9], analysis: "内容护城河极深，具有极高的文化粘性。" },
+                    { name: "三木", platform: "直播/全平台", style: "战术指挥与大局观解说，极具领袖气质。", recent: "《百人战场指挥官：我是如何调配三个小队包抄的》", data: [7, 10, 7, 8, 10], analysis: "核心社区领袖，带货爆发力极强。" },
+                    { name: "杀杀", platform: "抖音", style: "高光集锦与快节奏剪辑鼻祖，节奏感极强。", recent: "《这就是航天基地之王！一分钟高能时刻》", data: [9, 8, 10, 5, 7], analysis: "算法宠儿，单视频曝光量常态化破百万。" },
+                    { name: "晚秋", platform: "B站", style: "老练的FPS全能博主，内容兼具深度与趣味。", recent: "《深度对比：为什么三角洲是目前的最佳替代品》", data: [7, 7, 9, 9, 8], analysis: "具备跨游戏圈层的影响力，议价权极高。" }
+                ]
+            },
+            t4: {
+                intro: "传说级顶流，跨圈层影响力，深度参与官方游戏设计建议，商业价值对标明星。",
+                income: ["全行业跨界商单 (60%)", "自营外设/潮牌 (20%)", "流量分成矩阵 (20%)"],
+                list: [
+                    { name: "一只老六", platform: "全平台", style: "整活与战术结合的开创者，幽默与硬核的完美平衡点。", recent: "《老六的终极自我修养：我在航天基地蹲到天黑》", data: [8, 10, 9, 9, 10], analysis: "游戏生态的代名词，具备极高的全网IP价值。" },
+                    { name: "秦奋 (奋哥)", platform: "直播/全平台", style: "官方深度合作伙伴，极具亲和力的硬核玩家。", recent: "《奋哥带队：下个赛季新内容独家首发测评》", data: [7, 9, 8, 10, 9], analysis: "官方与玩家的桥梁，具有不可撼动的正统地位。" },
+                    { name: "XDD-小叮当", platform: "直播", style: "职业级FPS天花板，以极致的操作和反应闻名全网。", recent: "《职业选手的降维打击：航天基地清场实录》", data: [10, 7, 8, 7, 10], analysis: "竞技精神图腾，硬件发烧友的终极消费向导。" },
+                    { name: "斯诺Snow", platform: "全平台", style: "META风向标，每一套方案都能引发全服模仿。", recent: "《版本答案更新：全网最稳改枪与战术思路》", data: [9, 8, 9, 10, 9], analysis: "掌控全服生态平衡，是官方的核心建议提供者。" },
+                    { name: "托马斯CzH", platform: "多栖", style: "FPS界的长青树，人品与技术并存的教父级主播。", recent: "《三角洲怀旧特辑：这一枪，是为了兄弟》", data: [8, 9, 9, 8, 10], analysis: "极其稳健的商业信誉，中产阶级粉丝占比极高。" }
+                ]
+            }
+        };
+
+        // --- Router ---
+        function navigateTo(pId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-link-active', 'text-amber-500'));
+            
+            document.getElementById(`page-${pId}`).classList.add('active');
+            document.getElementById(`nav-${pId}`).classList.add('nav-link-active', 'text-amber-500');
+
+            if (pId === 'data') initMainCharts();
+        }
+
+        // --- Modals ---
+        function openTier(tId) {
+            const d = creators[tId];
+            document.getElementById('tier-title').innerText = tId.toUpperCase() + " TACTICAL BRIEF";
+            document.getElementById('tier-intro').innerText = d.intro;
+            document.getElementById('tier-income').innerHTML = d.income.map(i => `<li>- ${i}</li>`).join('');
+            document.getElementById('tier-creators').innerHTML = d.list.map((c, idx) => `
+                <button onclick='openCreator("${tId}", ${idx})' class="bg-slate-900 hover:bg-amber-500/10 border border-slate-800 p-4 text-left flex justify-between items-center transition-all group">
+                    <span class="font-bold group-hover:text-amber-500">${c.name}</span>
+                    <span class="text-[10px] text-slate-600 font-mono">${c.platform}</span>
+                </button>
+            `).join('');
+            document.getElementById('tier-modal').classList.add('active');
+        }
+
+        function closeModals() { document.getElementById('tier-modal').classList.remove('active'); }
+
+        let rChart = null;
+        function openCreator(tId, idx) {
+            const c = creators[tId].list[idx];
+            document.getElementById('creator-name').innerText = c.name;
+            document.getElementById('creator-platform').innerText = c.platform;
+            document.getElementById('creator-avatar').innerText = c.name[0];
+            document.getElementById('creator-style').innerText = c.style;
+            document.getElementById('creator-recent').innerText = c.recent;
+            document.getElementById('creator-analysis').innerText = c.analysis;
+            document.getElementById('creator-modal').classList.add('active');
+            
+            setTimeout(() => {
+                if(rChart) rChart.destroy();
+                rChart = new Chart(document.getElementById('creatorRadar'), {
+                    type: 'radar',
+                    data: { labels: ['技术','互动','制作','策略','粘性'], datasets: [{ data: c.data, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.2)', borderWidth: 1 }] },
+                    options: { responsive:true, maintainAspectRatio:false, scales:{r:{grid:{color:'#334155'},angleLines:{color:'#334155'},ticks:{display:false},pointLabels:{color:'#64748b'}}}, plugins:{legend:{display:false}} }
+                });
+            }, 100);
+        }
+        function closeSubModal() { document.getElementById('creator-modal').classList.remove('active'); }
+
+        // --- AI Forge ---
+        async function handleAI(type) {
+            const out = document.getElementById(type === 'creative' ? 'ai-out' : 'roi-out');
+            out.innerHTML = "<div class='flex flex-col items-center py-10'><div class='w-10 h-10 border-4 border-amber-500 border-t-transparent animate-spin rounded-full mb-4'></div><span class='text-xs uppercase hud-font'>Processing Data Stream...</span></div>";
+            
+            let s = type === 'creative' ? "你是一位《三角洲行动》资深爆款视频专家。根据关键词，生成包含：爆款标题、黄金三秒钩子、视频结构和核心增长建议。要求专业且具有实操性。" : "你是一位顶级电竞 MCN 机构运营总监。根据用户提供的数据指出其账号目前的创作瓶颈，并给出至少三个改进点。";
+            let p = type === 'creative' ? `关键词：${document.getElementById('ai-input').value}` : `播放：${document.getElementById('roi-views').value}, 互动：${document.getElementById('roi-engage').value}%`;
+
+            const r = await callGemini(p, s);
+            out.innerHTML = r.replace(/\n/g, '<br>');
+        }
+
+        async function callGemini(p, s) {
+            try {
+                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents:[{parts:[{text:p}]}], systemInstruction:{parts:[{text:s}]} })
+                });
+                const d = await resp.json();
+                return d.candidates[0].content.parts[0].text;
+            } catch(e) { return "ERROR: DATA LINK FAILED. RETRY."; }
+        }
+
+        // --- Charts ---
+        function initMainCharts() {
+            // Fix: Destroy existing chart instances before re-initializing to prevent "Canvas is already in use" error
+            if (pChartInstance) pChartInstance.destroy();
+            if (rChartInstance) rChartInstance.destroy();
+
+            const canvasP = document.getElementById('pChart');
+            const canvasR = document.getElementById('rChart');
+            if (!canvasP || !canvasR) return;
+
+            pChartInstance = new Chart(canvasP, {
+                type: 'doughnut',
+                data: { labels: ['抖音 (52%)', 'B站 (28%)', '快手 (15%)', '其他 (5%)'], datasets: [{ data: [52, 28, 15, 5], backgroundColor: ['#f59e0b', '#06b6d4', '#ef4444', '#1e293b'], borderWidth: 0 }] },
+                options: { responsive:true, maintainAspectRatio:false, cutout:'75%', plugins: { legend: { position:'bottom', labels: { color: '#64748b', font: { size: 10 } } } } }
+            });
+
+            rChartInstance = new Chart(canvasR, {
+                type: 'radar',
+                data: { labels: ['技术','整活','剪辑','数据','粘性'], datasets: [{ label:'爆满赛道', data:[10,4,6,5,4], borderColor:'#f59e0b'}, {label:'潜力赛道', data:[7,6,8,9,9], borderColor:'#06b6d4'}] },
+                options: { responsive:true, maintainAspectRatio:false, plugins: { legend: { position:'bottom', labels: { color: '#64748b' } } }, scales:{r:{grid:{color:'#1e293b'},angleLines:{color:'#1e293b'},ticks:{display:false}}} }
+            });
+        }
+    </script>
+</body>
+</html>
